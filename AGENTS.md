@@ -309,7 +309,6 @@ python spanish/chat.py
 
 - **All scripts default to `API_HOST=github`** if no .env file is present and no environment variable is set.
 - Scripts use `load_dotenv(override=True)` which means .env values override environment variables.
-- In GitHub Codespaces, `GITHUB_TOKEN` is pre-set, so scripts work immediately without configuration.
 
 ### Model Compatibility
 
