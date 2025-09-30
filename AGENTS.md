@@ -160,79 +160,80 @@ The scripts read environment variables from a `.env` file. Create one based on y
 
 #### Option 1: GitHub Models (RECOMMENDED for agents)
 
+**For agents:** Check if `GITHUB_TOKEN` environment variable is available:
+```bash
+if [ -n "$GITHUB_TOKEN" ]; then
+    echo "GitHub Models available - GITHUB_TOKEN is set"
+else
+    echo "GitHub Models not available - GITHUB_TOKEN not found"
+fi
+```
+
 In GitHub Codespaces, `GITHUB_TOKEN` is already set, so **no .env file is needed** - scripts will work immediately.
 
-For local development:
-1. Create a GitHub Personal Access Token (no scopes needed): https://github.com/settings/tokens
-2. Set the environment variable:
-   ```bash
-   export GITHUB_TOKEN=your_personal_access_token
-   ```
-   Or create a `.env` file:
-   ```bash
-   cp .env.sample.github .env
-   # Edit .env and set GITHUB_TOKEN
-   ```
-
-3. Optionally set a different model (default is `gpt-4o`):
-   ```bash
-   export GITHUB_MODEL=openai/gpt-4o-mini
-   ```
+If `GITHUB_TOKEN` is available, you can optionally set a different model (default is `gpt-4o`):
+```bash
+export GITHUB_MODEL=openai/gpt-4o-mini
+```
 
 **Models that support function calling:** `gpt-4o`, `gpt-4o-mini`, `o3-mini`, `AI21-Jamba-1.5-Large`, `AI21-Jamba-1.5-Mini`, `Codestral-2501`, `Cohere-command-r`, `Ministral-3B`, `Mistral-Large-2411`, `Mistral-Nemo`, `Mistral-small`
 
 #### Option 2: Azure OpenAI (requires Azure resources and costs)
 
-1. Install Azure Developer CLI: https://aka.ms/install-azd
-2. Login to Azure:
-   ```bash
-   azd auth login
-   # Or for Codespaces: azd auth login --use-device-code
-   ```
-3. Provision resources (creates resource group, OpenAI account, deploys gpt-4o and text-embedding-3-small):
-   ```bash
-   azd provision
-   ```
-   This will:
-   - Prompt for environment name (e.g., "agents-demos")
-   - Prompt for subscription
-   - Prompt for location
-   - Create Azure resources using `infra/main.bicep`
-   - Automatically run `infra/write_dot_env.sh` (or `.ps1` on Windows) to create `.env`
+**For agents:** Check if Azure OpenAI environment variables are already configured:
+```bash
+if [ -n "$AZURE_OPENAI_ENDPOINT" ] && [ -n "$AZURE_OPENAI_CHAT_DEPLOYMENT" ]; then
+    echo "Azure OpenAI available - required environment variables are set"
+else
+    echo "Azure OpenAI not available - missing AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_CHAT_DEPLOYMENT"
+fi
+```
 
-4. After provisioning, the `.env` file will be created automatically with all needed variables.
+If Azure OpenAI variables are not available, an administrator would need to provision Azure resources using:
+```bash
+azd auth login
+azd provision
+```
 
-5. To clean up resources:
-   ```bash
-   azd down
-   ```
+This creates real Azure resources that incur costs. The `.env` file would be created automatically with all needed variables after provisioning.
 
 #### Option 3: OpenAI.com (requires API key and costs)
 
+**For agents:** Check if OpenAI.com API key is available:
 ```bash
-cp .env.sample.openai .env
-# Edit .env and set:
-# API_HOST=openai
-# OPENAI_API_KEY=your_openai_api_key
-# OPENAI_MODEL=gpt-4o-mini
+if [ -n "$OPENAI_API_KEY" ]; then
+    echo "OpenAI.com available - OPENAI_API_KEY is set"
+else
+    echo "OpenAI.com not available - OPENAI_API_KEY not found"
+fi
 ```
+
+If `OPENAI_API_KEY` is available, ensure `API_HOST=openai` and `OPENAI_MODEL` are also set (e.g., `gpt-4o-mini`).
 
 #### Option 4: Ollama (requires local Ollama installation)
 
-1. Install Ollama: https://ollama.com/
-2. Pull a model:
-   ```bash
-   ollama pull llama3.1
-   ```
-3. Create .env:
-   ```bash
-   cp .env.sample.ollama .env
-   # Edit .env and set:
-   # API_HOST=ollama
-   # OLLAMA_ENDPOINT=http://localhost:11434/v1
-   # OLLAMA_MODEL=llama3.1
-   ```
-   **Important:** If running in a Dev Container, use `http://host.docker.internal:11434/v1` instead of `localhost`.
+**For agents:** Check if Ollama is installed and running:
+```bash
+if command -v ollama &> /dev/null; then
+    echo "Ollama command found"
+    ollama list
+    if [ $? -eq 0 ]; then
+        echo "Ollama is running and available"
+    else
+        echo "Ollama installed but not running"
+    fi
+else
+    echo "Ollama not installed"
+fi
+```
+
+If Ollama is available, configure the environment:
+```bash
+# API_HOST=ollama
+# OLLAMA_ENDPOINT=http://localhost:11434/v1
+# OLLAMA_MODEL=llama3.1
+```
+**Important:** If running in a Dev Container, use `http://host.docker.internal:11434/v1` instead of `localhost`.
 
 ### Running Scripts
 
@@ -301,43 +302,6 @@ python spanish/chat.py
 ```
 
 **Note:** Most scripts are demonstration scripts, not unit-tested. Changes to scripts should be manually verified by running them.
-
-## Upgrading Python Dependencies
-
-This repository uses **standard pip** for dependency management (not poetry, pipenv, or uv for installation).
-
-### To upgrade a single dependency:
-
-```bash
-# Activate your virtual environment first
-source .venv/bin/activate
-
-# Upgrade a specific package
-python -m pip install --upgrade package-name
-
-# Update requirements file manually to reflect the new version
-```
-
-### To upgrade all dependencies:
-
-```bash
-# Activate your virtual environment
-source .venv/bin/activate
-
-# Upgrade all packages
-python -m pip install --upgrade -r requirements.txt
-python -m pip install --upgrade -r requirements-rag.txt
-
-# Freeze to see new versions (optional)
-python -m pip freeze
-```
-
-### Important Notes:
-
-1. **The CI uses `uv` for speed**, but you should use standard `pip` for local development unless you have `uv` installed.
-2. After upgrading dependencies, always test by running the linters and at least a few example scripts.
-3. The `openai` package has a minimum version constraint: `openai>=1.108.1` in requirements.txt. Don't downgrade below this.
-4. If upgrading `openai`, check for breaking API changes in their changelog.
 
 ## Important Notes and Gotchas
 
