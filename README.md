@@ -4,7 +4,6 @@ This repository contains a collection of Python scripts that demonstrate how to 
 
 * [Examples](#examples)
   * [OpenAI Chat Completions](#openai-chat-completions)
-  * [Popular LLM libraries](#popular-llm-libraries)
   * [Function calling](#function-calling)
   * [Structured outputs](#structured-outputs)
   * [Retrieval-Augmented Generation (RAG)](#retrieval-augmented-generation-rag)
