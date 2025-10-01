@@ -1,6 +1,6 @@
 # Demos de Python con OpenAI
 
-Este repositorio contiene una colección de scripts en Python que demuestran cómo usar la API de OpenAI (y modelos compatibles) para generar completados de chat.
+Este repositorio contiene una colección de scripts en Python que demuestran cómo usar la API de OpenAI (y modelos compatibles) para generar completados de chat. 📺 [Video tutorial de como usar este repositorio](https://youtu.be/0WwpMFMHEOo?si=9K4jFdBYdj-kb_GL)
 
 * [Ejemplos](#ejemplos)
   * [Completados de chat de OpenAI](#completados-de-chat-de-openai)
