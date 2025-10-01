@@ -1,6 +1,7 @@
 # Python OpenAI demos
 
 This repository contains a collection of Python scripts that demonstrate how to use the OpenAI API to generate chat completions.
+[📺 Watch this video walkthrough of running these demos in GitHub Codespaces](https://www.youtube.com/watch?v=_daw48A-RZI)
 
 * [Examples](#examples)
   * [OpenAI Chat Completions](#openai-chat-completions)
