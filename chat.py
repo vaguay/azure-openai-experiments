@@ -3,6 +3,27 @@ import os
 import azure.identity
 import openai
 from dotenv import load_dotenv
+import sys
+
+#prompt = "Say hello!"
+#if len(sys.argv) > 1:
+ #   prompt = " ".join(sys.argv[1:])
+
+ history = []
+while True:
+    user = input("you> ").strip()
+    if user.lower() in {"exit", "quit"}:
+        break
+    history.append({"role":"user","content":user})
+    resp = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role":"system","content":"You are a helpful assistant."}] + history
+    )
+    reply = resp.choices[0].message.content
+    print("bot>", reply)
+    history.append({"role":"assistant","content":reply})
+
+
 
 # Setup the OpenAI client to use either Azure, OpenAI.com, or Ollama API
 load_dotenv(override=True)
